@@ -1,0 +1,12 @@
+CC0 1.0 Universal (CC0 1.0) Public Domain Dedication
+
+この作品は、著作権および関連するすべての権利を、法律上可能な限り放棄し、パブリックドメインとして提供されます。  
+誰でも、この作品を自由に使用、複製、改変、再配布することができます。  
+クレジット表記や許可は不要です。
+
+This work has been dedicated to the public domain under the terms of the Creative Commons CC0 1.0 Universal Public Domain Dedication.  
+To the extent possible under law, the author has waived all copyright and related rights to this work.  
+You may copy, modify, distribute, and perform the work, even for commercial purposes, all without asking permission.
+
+For more information, please see:  
+https://creativecommons.org/publicdomain/zero/1.0/
