@@ -4,6 +4,7 @@
 #include <N503/Event/Storage.hpp>
 #include <algorithm>
 #include <memory>
+#include <type_traits>
 #include <utility>
 
 namespace N503::Event
@@ -21,23 +22,24 @@ namespace N503::Event
     };
 
     /// @brief リソースアロケータが満たすべき要件
-    template <typename T>
-    concept ResourceAllocator = requires(T& resource, void* pointer, std::size_t count)
+    template <typename Resource, typename NodeType>
+    concept ResourceAllocator = requires(Resource& resource, NodeType* pointer, std::size_t count)
     {
         /// @brief 型 T のメモリを count 個分確保
-        { resource.template Allocate<T>(count) } -> std::convertible_to<T*>;
+        { resource.template Allocate<NodeType>(count) } -> std::convertible_to<NodeType*>;
 
         /// @brief メモリを返却
         { resource.Deallocate(pointer, count) } -> std::same_as<void>;
+
+        /// @brief 型付きアロケータ(Pool)の場合は ValueType が一致する必要がある
+        requires (!requires { typename Resource::ValueType; } || std::is_same_v<typename Resource::ValueType, NodeType>);
     };
 
     /// @brief イベントシステムのエントリポイント。
     /// メモリ管理(Storage)とツリーのルートをラップし、簡潔な操作を提供します。
     /// @warning Registry の生存期間は、すべての Node より長くする必要があります。
     /// Node が存在する間に Registry を破棄すると、クラッシュが発生します。
-    template <EventTag Tag, ResourceAllocator Resource>
-    //requires ResourceAllocator<Resource, Node<Tag>>
-    class Registry final
+    template <typename Tag, typename Resource> requires ResourceAllocator<Resource, Node<Tag>> class Registry final
     {
     public:
         /// @brief コンストラクタ。内部 Resource の初期化引数を転送します。
