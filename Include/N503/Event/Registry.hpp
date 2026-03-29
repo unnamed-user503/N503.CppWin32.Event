@@ -22,20 +22,22 @@ namespace N503::Event
 
     /// @brief リソースアロケータが満たすべき要件
     template <typename T>
-    concept ResourceAllocator = requires(T& res, void* ptr, std::size_t n)
+    concept ResourceAllocator = requires(T& resource, void* pointer, std::size_t count)
     {
-        /// @brief 型 T のメモリを n 個分確保
-        { res.template Allocate<T>(n) } -> std::convertible_to<T*>;
+        /// @brief 型 T のメモリを count 個分確保
+        { resource.template Allocate<T>(count) } -> std::convertible_to<T*>;
 
         /// @brief メモリを返却
-        { res.Deallocate(ptr, n) } -> std::same_as<void>;
+        { resource.Deallocate(pointer, count) } -> std::same_as<void>;
     };
 
     /// @brief イベントシステムのエントリポイント。
     /// メモリ管理(Storage)とツリーのルートをラップし、簡潔な操作を提供します。
     /// @warning Registry の生存期間は、すべての Node より長くする必要があります。
     /// Node が存在する間に Registry を破棄すると、クラッシュが発生します。
-    template <EventTag Tag, ResourceAllocator Resource> class Registry final
+    template <EventTag Tag, ResourceAllocator Resource>
+    //requires ResourceAllocator<Resource, Node<Tag>>
+    class Registry final
     {
     public:
         /// @brief コンストラクタ。内部 Resource の初期化引数を転送します。
