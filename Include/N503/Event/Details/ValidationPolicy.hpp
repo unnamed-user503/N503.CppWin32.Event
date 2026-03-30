@@ -6,16 +6,17 @@
 namespace N503::Event
 {
     // 前方宣言
-    template <typename Tag, std::size_t MaxTags>
+    template <typename TTag, std::size_t MaxTags>
     class Node;
 }
 
 namespace N503::Event::Details
 {
+
     /// @brief ノードの親子関係における検証を担当するポリシー
-    /// @tparam Tag イベントタグの型
-    /// @tparam MaxTags 配列使用時の最大タグ数
-    template <typename Tag, std::size_t MaxTags = 64>
+    /// @tparam TTag イベントタグの型
+    /// @tparam TMaxTags 配列使用時の最大タグ数
+    template <typename TTag, std::size_t TMaxTags = 64>
     class ValidationPolicy
     {
     protected:
@@ -24,7 +25,7 @@ namespace N503::Event::Details
         /// @param descendant 子孫候補のノード
         /// @param ancestor 祖先候補のノード
         /// @return ancestor が descendant の祖先なら true
-        auto IsDescendantOf(const Node<Tag, MaxTags>* descendant, const Node<Tag, MaxTags>* ancestor) -> bool
+        auto IsDescendantOf(const Node<TTag, TMaxTags>* descendant, const Node<TTag, TMaxTags>* ancestor) -> bool
         {
             if (!descendant || !ancestor)
             {
@@ -32,7 +33,7 @@ namespace N503::Event::Details
             }
 
             // descendant の親をたどっていき、ancestor に到達するか確認
-            Node<Tag, MaxTags>* current = descendant->m_Parent.lock().get();
+            Node<TTag, TMaxTags>* current = descendant->m_Parent.lock().get();
 
             while (current != nullptr)
             {

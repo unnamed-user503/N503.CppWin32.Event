@@ -16,16 +16,17 @@
 namespace N503::Event
 {
     // 前方宣言
-    template <typename Tag, std::size_t MaxTags>
+    template <typename TTag, std::size_t TMaxTags>
     class Node;
 }
 
 namespace N503::Event::Details
 {
+
     /// @brief ノードの統計情報管理と更新を担当するポリシー
     /// @tparam Tag イベントタグの型
     /// @tparam MaxTags 配列使用時の最大タグ数
-    template <typename Tag, std::size_t MaxTags = 64>
+    template <typename TTag, std::size_t TMaxTags = 64>
     class StatisticsPolicy
     {
     protected:
@@ -41,14 +42,14 @@ namespace N503::Event::Details
 
         /// @brief 子ノード追加時の統計更新
         /// @param child 追加されたノード
-        auto AddChildStats(const Node<Tag, MaxTags>* child) -> void
+        auto AddChildStats(const Node<TTag, TMaxTags>* child) -> void
         {
             this->UpdateStats(child, 1);
         }
 
         /// @brief 子ノード削除時の統計更新
         /// @param child 削除されたノード
-        auto RemoveChildStats(const Node<Tag, MaxTags>* child) -> void
+        auto RemoveChildStats(const Node<TTag, TMaxTags>* child) -> void
         {
             this->UpdateStats(child, -1);
         }
@@ -57,11 +58,11 @@ namespace N503::Event::Details
         /// @param tag 検索するタグ
         /// @return 子孫に含まれる対象タグの数
         [[nodiscard]]
-        auto GetTagCount(Tag tag) const noexcept -> std::size_t
+        auto GetTagCount(TTag tag) const noexcept -> std::size_t
         {
 #ifdef N503_EVENT_REGISTRY_ARRAY_ENABLED
             const auto index = static_cast<std::size_t>(tag);
-            if (index >= MaxTags)
+            if (index >= TMaxTags)
             {
                 return 0;
             }
@@ -79,9 +80,9 @@ namespace N503::Event::Details
         /// @param child 追加/削除されたノード
         /// @param delta 適用する変化（+1 または -1）
         /// @param current 更新開始ノード（通常は this）
-        auto UpdateStats(const Node<Tag, MaxTags>* child, int delta) -> void
+        auto UpdateStats(const Node<TTag, TMaxTags>* child, int delta) -> void
         {
-            auto current = static_cast<Node<Tag, MaxTags>*>(this);
+            auto current = static_cast<Node<TTag, TMaxTags>*>(this);
 
             while (current)
             {
@@ -94,7 +95,7 @@ namespace N503::Event::Details
 
                 // 2. 子が持っていた全子孫の統計分を更新
 #ifdef N503_EVENT_REGISTRY_ARRAY_ENABLED
-                for (std::size_t i = 0; i < MaxTags; ++i)
+                for (std::size_t i = 0; i < TMaxTags; ++i)
                 {
                     if (child->m_TagCounts[i] > 0)
                     {
@@ -126,9 +127,9 @@ namespace N503::Event::Details
     protected:
         /// @brief 子孫ノードのタグ別合計カウント
 #ifdef N503_EVENT_REGISTRY_ARRAY_ENABLED
-        std::array<std::size_t, MaxTags> m_TagCounts;
+        std::array<std::size_t, TMaxTags> m_TagCounts;
 #else
-        std::unordered_map<Tag, std::size_t> m_TagCounts;
+        std::unordered_map<TTag, std::size_t> m_TagCounts;
 #endif
     };
 
