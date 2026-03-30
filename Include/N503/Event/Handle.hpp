@@ -13,12 +13,12 @@ namespace N503::Event
     /// @details ハンドルが破棄される際、管理対象ノードの状態を自動的に State::Destroyed に変更します。
     /// これにより、Registry::Update() 実行時に安全にツリーから切り離されます。
     /// @tparam Tag イベント配送に使用するタグの型
-    template <typename Tag> class Handle final
+    template <typename TTag> class Handle final
     {
     public:
         /// @brief 管理対象となるノードを指定してハンドルを構築します。
         /// @param node 管理対象のノードポインタ
-        explicit Handle(std::shared_ptr<Node<Tag>> node)
+        explicit Handle(std::shared_ptr<Node<TTag>> node)
             : m_Node(std::move(node))
         {
         }
@@ -56,7 +56,7 @@ namespace N503::Event
 
         /// @brief 管理対象ノードの共有ポインタを取得します。
         /// @return ノードの共有ポインタ
-        auto GetNode() const -> std::shared_ptr<Node<Tag>>
+        auto GetNode() const -> std::shared_ptr<Node<TTag>>
         {
             return m_Node;
         }
@@ -75,7 +75,7 @@ namespace N503::Event
 
     private:
         /// @brief 管理対象のノード
-        std::shared_ptr<Node<Tag>> m_Node;
+        std::shared_ptr<Node<TTag>> m_Node;
     };
 
 } // namespace N503::Event

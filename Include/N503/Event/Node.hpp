@@ -29,27 +29,27 @@ namespace N503::Event
     };
 
     /// @brief イベント通知システムのノードクラス
-    /// @tparam Tag イベントタグの型
-    /// @tparam MaxTags 配列使用時の最大タグ数
-    template <typename Tag, std::size_t MaxTags = 64>
+    /// @tparam TTag イベントタグの型
+    /// @tparam TMaxTags 配列使用時の最大タグ数
+    template <typename TTag, std::size_t TMaxTags = 64>
     class Node final
-        : public std::enable_shared_from_this<Node<Tag, MaxTags>>
-        , protected Details::StatisticsPolicy<Tag, MaxTags>
-        , protected Details::ValidationPolicy<Tag, MaxTags>
+        : public std::enable_shared_from_this<Node<TTag, TMaxTags>>
+        , protected Details::StatisticsPolicy<TTag, TMaxTags>
+        , protected Details::ValidationPolicy<TTag, TMaxTags>
     {
     public:
         /// @brief イベントハンドラの型定義
-        using Handler = std::function<void(const Visitor<Tag>&)>;
+        using Handler = std::function<void(const Visitor<TTag>&)>;
 
         /// @brief 特定のタグを持つ子孫ノードの総数を取得します
         /// @param tag 検索するタグ
         /// @return 子孫に含まれる対象タグの数
-        using Details::StatisticsPolicy<Tag, MaxTags>::GetTagCount;
+        using Details::StatisticsPolicy<TTag, TMaxTags>::GetTagCount;
 
         /// @brief コンストラクタ
         /// @param tag このノードに割り当てるタグ
         /// @param handler このノードがイベントを受信した際の処理
-        explicit Node(Tag tag, Handler handler = nullptr)
+        explicit Node(TTag tag, Handler handler = nullptr)
             : m_Tag(tag)
             , m_Handler(std::move(handler))
             , m_State(State::Active)
@@ -153,7 +153,7 @@ namespace N503::Event
 
         /// @brief イベントを受け入れ、自身および子孫ノードへ通知を伝播させます
         /// @param visitor イベント情報とトラバーサル制御を持つビジター
-        auto Accept(const Visitor<Tag>& visitor) -> void
+        auto Accept(const Visitor<TTag>& visitor) -> void
         {
             if (m_State == State::Destroyed)
             {
@@ -223,7 +223,7 @@ namespace N503::Event
 
         /// @brief 条件が一致する場合、登録されたハンドラを実行します
         /// @param visitor イベントビジター
-        auto Notify(const Visitor<Tag>& visitor) const -> void
+        auto Notify(const Visitor<TTag>& visitor) const -> void
         {
             if (m_Tag == visitor.GetTag() && m_Handler)
             {
@@ -249,17 +249,17 @@ namespace N503::Event
         /// @brief ノードに設定されたタグを取得します
         /// @return このノードのタグ
         [[nodiscard]]
-        auto GetTag() const noexcept -> Tag
+        auto GetTag() const noexcept -> TTag
         {
             return m_Tag;
         }
 
     private:
-        friend class Details::StatisticsPolicy<Tag, MaxTags>;
-        friend class Details::ValidationPolicy<Tag, MaxTags>;
+        friend class Details::StatisticsPolicy<TTag, TMaxTags>;
+        friend class Details::ValidationPolicy<TTag, TMaxTags>;
 
         /// @brief このノードの識別タグ
-        Tag m_Tag;
+        TTag m_Tag;
 
         /// @brief イベント発生時に実行されるコールバック
         Handler m_Handler;

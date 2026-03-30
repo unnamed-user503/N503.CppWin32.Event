@@ -9,7 +9,7 @@ namespace N503::Event
     /// @brief イベントツリーを走査し、メッセージを配送するクラス
     /// @details ターゲットとなるタグと配送データを保持し、配送の停止（Stop）制御を行います。
     /// @tparam Tag イベント配送に使用するタグの型
-    template <typename Tag> 
+    template <typename TTag> 
     class Visitor
     {
     public:
@@ -19,10 +19,10 @@ namespace N503::Event
         /// @brief ターゲットタグとデータを指定して Visitor を構築します
         /// @param tag 配送対象となるノードの識別タグ
         /// @param data 配送するデータ
-        template <typename T>
-        requires (!std::is_reference_v<T>)
-        explicit Visitor(Tag tag, T&& data) noexcept
-            : m_Data(std::forward<T>(data))
+        template <typename TDataType>
+        requires (!std::is_reference_v<TDataType>)
+        explicit Visitor(TTag tag, TDataType&& data) noexcept
+            : m_Data(std::forward<TDataType>(data))
             , m_Tag(tag)
         {
         }
@@ -48,7 +48,7 @@ namespace N503::Event
         /// @brief ターゲットタグを取得
         /// @return 識別タグ
         [[nodiscard]]
-        auto GetTag() const -> Tag
+        auto GetTag() const -> TTag
         {
             return m_Tag;
         }
@@ -76,7 +76,7 @@ namespace N503::Event
         Data m_Data;
 
         /// @brief 配送対象のタグ
-        Tag m_Tag{};
+        TTag m_Tag{};
 
         /// @brief 配送停止フラグ（const メソッド内から変更可能）
         mutable bool m_Stopped{false};

@@ -2,22 +2,19 @@
 #pragma once
 
 #include <array>
-#include <concepts>
 #include <cstddef>
-#include <cstring>
 #include <functional>
 #include <memory>
 #include <type_traits>
 #include <typeinfo>
-#include <utility>
 
 namespace N503::Event
 {
 
     /// @brief イベント型の要件
-    /// @details 参照型（T&）を許容せず、値またはポインタであることを保証します。
-    template <typename T>
-    concept DataType = !std::is_reference_v<T>;
+    /// @details 参照型（TDataType&）を許容せず、値またはポインタであることを保証します。
+    template <typename TDataType>
+    concept DataType = !std::is_reference_v<TDataType>;
 
     /// @brief 任意の型を保持するための型消去（Type Erasure）クラス
     /// @details SBO (Small Buffer Optimization) を備え、小さいデータはスタックバッファ、
@@ -36,16 +33,16 @@ namespace N503::Event
         /// @brief 任意の値を型消去して格納します。
         /// @tparam T 格納するデータの型
         /// @param value 格納する実体
-        template <DataType T>
-        explicit Data(T&& value) noexcept
+        template <DataType TDataType>
+        explicit Data(TDataType&& value) noexcept
         {
-            using Decayed = std::decay_t<T>;
+            using Decayed = std::decay_t<TDataType>;
             m_TypeInfo = &typeid(Decayed);
 
             if constexpr (sizeof(Decayed) <= BufferSize)
             {
                 // SBO: バッファ内に直接構築し、破棄用の関数を登録
-                new (m_Buffer.data()) Decayed(std::forward<T>(value));
+                new (m_Buffer.data()) Decayed(std::forward<TDataType>(value));
                 m_Cleanup = [](void* p)
                 {
                     std::destroy_at(static_cast<Decayed*>(p));
@@ -54,7 +51,7 @@ namespace N503::Event
             else
             {
                 // Heap: バッファに収まらない場合は shared_ptr で管理
-                m_Heap = std::make_shared<Decayed>(std::forward<T>(value));
+                m_Heap = std::make_shared<Decayed>(std::forward<TDataType>(value));
             }
         }
 
@@ -88,22 +85,22 @@ namespace N503::Event
         /// @brief 型安全な取得
         /// @tparam T 取得する型
         /// @return T型のポインタ、または型が一致しなければ nullptr
-        template <DataType T>
+        template <DataType TDataType>
         [[nodiscard]]
-        auto As() const noexcept -> const T*
+        auto As() const noexcept -> const TDataType*
         {
-            if (!m_TypeInfo || *m_TypeInfo != typeid(T)) return nullptr;
+            if (!m_TypeInfo || *m_TypeInfo != typeid(TDataType)) return nullptr;
 
             // スタック格納 → バッファから取得
-            if constexpr (sizeof(T) <= BufferSize)
+            if constexpr (sizeof(TDataType) <= BufferSize)
             {
-                return reinterpret_cast<const T*>(m_Buffer.data());
+                return reinterpret_cast<const TDataType*>(m_Buffer.data());
             }
 
             // ヒープ格納 → shared_ptr から取得
             if (m_Heap)
             {
-                return reinterpret_cast<const T*>(m_Heap.get());
+                return reinterpret_cast<const TDataType*>(m_Heap.get());
             }
 
             return nullptr;
