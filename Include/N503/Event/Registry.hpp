@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include <N503/Event/Node.hpp>
 #include <N503/Event/Storage.hpp>
@@ -13,8 +13,7 @@ namespace N503::Event
 
     /// @brief イベントタグが満たすべき要件
     template <typename TTag>
-    concept EventTag = requires(TTag tag)
-    {
+    concept EventTag = requires(TTag tag) {
         /// @brief タグが整数型に変換可能（配列インデックス用）
         { static_cast<std::size_t>(tag) } -> std::convertible_to<std::size_t>;
 
@@ -24,8 +23,7 @@ namespace N503::Event
 
     /// @brief リソースアロケータが満たすべき要件
     template <typename TResource, typename TNodeType>
-    concept ResourceAllocator = requires(TResource& resource, TNodeType* pointer, std::size_t count)
-    {
+    concept ResourceAllocator = requires(TResource& resource, TNodeType* pointer, std::size_t count) {
         /// @brief 型 T のメモリを count 個分確保
         { resource.template Allocate<TNodeType>(count) } -> std::convertible_to<TNodeType*>;
 
@@ -33,19 +31,20 @@ namespace N503::Event
         { resource.Deallocate(pointer, count) } -> std::same_as<void>;
 
         /// @brief 型付きアロケータ(Pool)の場合は ValueType が一致する必要がある
-        requires (!requires { typename TResource::ValueType; } || std::is_same_v<typename TResource::ValueType, TNodeType>);
+        requires(!requires { typename TResource::ValueType; } || std::is_same_v<typename TResource::ValueType, TNodeType>);
     };
 
     /// @brief イベントシステムのエントリポイント。
     /// メモリ管理(Storage)とツリーのルートをラップし、簡潔な操作を提供します。
     /// @warning Registry の生存期間は、すべての Node より長くする必要があります。
     /// Node が存在する間に Registry を破棄すると、クラッシュが発生します。
-    template <typename TTag, typename TResource> requires ResourceAllocator<TResource, Node<TTag>> class Registry final
+    template <typename TTag, typename TResource>
+        requires ResourceAllocator<TResource, Node<TTag>>
+    class Registry final
     {
     public:
         /// @brief コンストラクタ。内部 TResource の初期化引数を転送します。
-        template <typename... TArgs>
-        explicit Registry(TTag tag, TArgs&&... args) : m_Storage(std::forward<TArgs>(args)...)
+        template <typename... TArgs> explicit Registry(TTag tag, TArgs&&... args) : m_Storage(std::forward<TArgs>(args)...)
         {
             m_Root = m_Storage.template Create<Node<TTag>>(tag);
         }

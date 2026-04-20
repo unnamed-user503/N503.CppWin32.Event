@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include <cstddef>
 #include <stdexcept>
@@ -6,9 +6,8 @@
 namespace N503::Event
 {
     // 前方宣言
-    template <typename TTag, std::size_t MaxTags>
-    class Node;
-}
+    template <typename TTag, std::size_t MaxTags> class Node;
+} // namespace N503::Event
 
 namespace N503::Event::Details
 {
@@ -16,8 +15,7 @@ namespace N503::Event::Details
     /// @brief ノードの親子関係における検証を担当するポリシー
     /// @tparam TTag イベントタグの型
     /// @tparam TMaxTags 配列使用時の最大タグ数
-    template <typename TTag, std::size_t TMaxTags = 64>
-    class ValidationPolicy
+    template <typename TTag, std::size_t TMaxTags = 64> class ValidationPolicy
     {
     protected:
         /// @brief 指定ノードが別ノードの子孫であるかを判定
@@ -39,13 +37,13 @@ namespace N503::Event::Details
             {
                 if (current == ancestor)
                 {
-                    return true;  // 祖先が見つかった
+                    return true; // 祖先が見つかった
                 }
 
                 current = current->m_Parent.lock().get();
             }
 
-            return false;  // 祖先が見つからなかった
+            return false; // 祖先が見つからなかった
         }
     };
 

@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #ifndef N503_EVENT_REGISTRY_ARRAY_ENABLED
 #define N503_EVENT_REGISTRY_ARRAY_ENABLED
@@ -31,11 +31,7 @@ namespace N503::Event
     /// @brief イベント通知システムのノードクラス
     /// @tparam TTag イベントタグの型
     /// @tparam TMaxTags 配列使用時の最大タグ数
-    template <typename TTag, std::size_t TMaxTags = 64>
-    class Node final
-        : public std::enable_shared_from_this<Node<TTag, TMaxTags>>
-        , protected Details::StatisticsPolicy<TTag, TMaxTags>
-        , protected Details::ValidationPolicy<TTag, TMaxTags>
+    template <typename TTag, std::size_t TMaxTags = 64> class Node final : public std::enable_shared_from_this<Node<TTag, TMaxTags>>, protected Details::StatisticsPolicy<TTag, TMaxTags>, protected Details::ValidationPolicy<TTag, TMaxTags>
     {
     public:
         /// @brief イベントハンドラの型定義
@@ -49,10 +45,7 @@ namespace N503::Event
         /// @brief コンストラクタ
         /// @param tag このノードに割り当てるタグ
         /// @param handler このノードがイベントを受信した際の処理
-        explicit Node(TTag tag, Handler handler = nullptr)
-            : m_Tag(tag)
-            , m_Handler(std::move(handler))
-            , m_State(State::Active)
+        explicit Node(TTag tag, Handler handler = nullptr) : m_Tag(tag), m_Handler(std::move(handler)), m_State(State::Active)
         {
         }
 
@@ -103,39 +96,31 @@ namespace N503::Event
             // Destroyed なら Sweep に任せるべき
             if (child->m_State == State::Destroyed)
             {
-                throw std::logic_error(
-                    "Cannot RemoveChild: child is already marked Destroyed. "
-                    "Call registry.Update() or use Handle instead."
-                );
+                throw std::logic_error("Cannot RemoveChild: child is already marked Destroyed. "
+                                       "Call registry.Update() or use Handle instead.");
             }
 
             // 親が一致するか確認
             if (child->m_Parent.lock().get() != this)
             {
-                throw std::logic_error(
-                    "Child's parent does not match this node. "
-                    "Use the correct parent node to remove."
-                );
+                throw std::logic_error("Child's parent does not match this node. "
+                                       "Use the correct parent node to remove.");
             }
 
             // 子リストから検索
             auto iterate = std::find(m_Children.begin(), m_Children.end(), child);
             if (iterate == m_Children.end())
             {
-                throw std::logic_error(
-                    "Child not found in m_Children list. "
-                    "Possible data corruption (parent reference exists but not in list)."
-                );
+                throw std::logic_error("Child not found in m_Children list. "
+                                       "Possible data corruption (parent reference exists but not in list).");
             }
 
             // デバッグ：二重登録をチェック
 #ifdef _DEBUG
             if (std::count(m_Children.begin(), m_Children.end(), child) != 1)
             {
-                throw std::logic_error(
-                    "Child is registered multiple times in m_Children. "
-                    "Serious data corruption detected."
-                );
+                throw std::logic_error("Child is registered multiple times in m_Children. "
+                                       "Serious data corruption detected.");
             }
 #endif
 

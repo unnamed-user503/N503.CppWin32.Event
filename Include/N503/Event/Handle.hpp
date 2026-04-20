@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include <N503/Event/Node.hpp>
 
@@ -18,8 +18,7 @@ namespace N503::Event
     public:
         /// @brief 管理対象となるノードを指定してハンドルを構築します。
         /// @param node 管理対象のノードポインタ
-        explicit Handle(std::shared_ptr<Node<TTag>> node)
-            : m_Node(std::move(node))
+        explicit Handle(std::shared_ptr<Node<TTag>> node) : m_Node(std::move(node))
         {
         }
 

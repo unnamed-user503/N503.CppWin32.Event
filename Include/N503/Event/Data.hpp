@@ -1,4 +1,4 @@
-﻿// EventData.hpp
+// EventData.hpp
 #pragma once
 
 #include <array>
@@ -33,8 +33,7 @@ namespace N503::Event
         /// @brief 任意の値を型消去して格納します。
         /// @tparam T 格納するデータの型
         /// @param value 格納する実体
-        template <DataType TDataType>
-        explicit Data(TDataType&& value) noexcept
+        template <DataType TDataType> explicit Data(TDataType&& value) noexcept
         {
             using Decayed = std::decay_t<TDataType>;
             m_TypeInfo = &typeid(Decayed);
@@ -89,7 +88,10 @@ namespace N503::Event
         [[nodiscard]]
         auto As() const noexcept -> const TDataType*
         {
-            if (!m_TypeInfo || *m_TypeInfo != typeid(TDataType)) return nullptr;
+            if (!m_TypeInfo || *m_TypeInfo != typeid(TDataType))
+            {
+                return nullptr;
+            }
 
             // スタック格納 → バッファから取得
             if constexpr (sizeof(TDataType) <= BufferSize)

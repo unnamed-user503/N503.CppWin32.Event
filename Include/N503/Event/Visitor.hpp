@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include <N503/Event/Data.hpp>
 #include <type_traits>
@@ -9,8 +9,7 @@ namespace N503::Event
     /// @brief イベントツリーを走査し、メッセージを配送するクラス
     /// @details ターゲットとなるタグと配送データを保持し、配送の停止（Stop）制御を行います。
     /// @tparam Tag イベント配送に使用するタグの型
-    template <typename TTag> 
-    class Visitor
+    template <typename TTag> class Visitor
     {
     public:
         /// @brief デフォルトコンストラクタ
@@ -20,10 +19,8 @@ namespace N503::Event
         /// @param tag 配送対象となるノードの識別タグ
         /// @param data 配送するデータ
         template <typename TDataType>
-        requires (!std::is_reference_v<TDataType>)
-        explicit Visitor(TTag tag, TDataType&& data) noexcept
-            : m_Data(std::forward<TDataType>(data))
-            , m_Tag(tag)
+            requires(!std::is_reference_v<TDataType>)
+        explicit Visitor(TTag tag, TDataType&& data) noexcept : m_Data(std::forward<TDataType>(data)), m_Tag(tag)
         {
         }
 
@@ -79,7 +76,7 @@ namespace N503::Event
         TTag m_Tag{};
 
         /// @brief 配送停止フラグ（const メソッド内から変更可能）
-        mutable bool m_Stopped{false};
+        mutable bool m_Stopped{ false };
     };
 
 } // namespace N503::Event

@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include <N503/Event/Node.hpp>
 #include <algorithm>
@@ -19,9 +19,7 @@ namespace N503::Event
         /// @brief 核心：Resource の構築引数を転送する
         /// Arena(size), Queue(size, count) 等、デフォルトコンストラクタを持たない
         /// Resource を初期化リストで確実に実体化します。
-        template <typename... TArgs>
-        explicit Storage(TArgs&&... args)
-            : m_Resource{ std::make_shared<TResource>(std::forward<TArgs>(args)...) }
+        template <typename... TArgs> explicit Storage(TArgs&&... args) : m_Resource{ std::make_shared<TResource>(std::forward<TArgs>(args)...) }
         {
         }
 

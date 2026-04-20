@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #ifndef N503_EVENT_REGISTRY_ARRAY_ENABLED
 #define N503_EVENT_REGISTRY_ARRAY_ENABLED
@@ -16,9 +16,8 @@
 namespace N503::Event
 {
     // 前方宣言
-    template <typename TTag, std::size_t TMaxTags>
-    class Node;
-}
+    template <typename TTag, std::size_t TMaxTags> class Node;
+} // namespace N503::Event
 
 namespace N503::Event::Details
 {
@@ -26,11 +25,10 @@ namespace N503::Event::Details
     /// @brief ノードの統計情報管理と更新を担当するポリシー
     /// @tparam Tag イベントタグの型
     /// @tparam MaxTags 配列使用時の最大タグ数
-    template <typename TTag, std::size_t TMaxTags = 64>
-    class StatisticsPolicy
+    template <typename TTag, std::size_t TMaxTags = 64> class StatisticsPolicy
     {
     protected:
-        /// @brief 
+        /// @brief
         StatisticsPolicy()
         {
 #ifdef N503_EVENT_REGISTRY_ARRAY_ENABLED
