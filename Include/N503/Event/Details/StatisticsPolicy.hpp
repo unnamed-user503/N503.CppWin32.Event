@@ -40,14 +40,14 @@ namespace N503::Event::Details
 
         /// @brief 子ノード追加時の統計更新
         /// @param child 追加されたノード
-        auto AddChildStats(const Node<TTag, TMaxTags>* child) -> void
+        auto AddChildStats(const Node<TTag, TMaxTags> *child) -> void
         {
             this->UpdateStats(child, 1);
         }
 
         /// @brief 子ノード削除時の統計更新
         /// @param child 削除されたノード
-        auto RemoveChildStats(const Node<TTag, TMaxTags>* child) -> void
+        auto RemoveChildStats(const Node<TTag, TMaxTags> *child) -> void
         {
             this->UpdateStats(child, -1);
         }
@@ -78,9 +78,9 @@ namespace N503::Event::Details
         /// @param child 追加/削除されたノード
         /// @param delta 適用する変化（+1 または -1）
         /// @param current 更新開始ノード（通常は this）
-        auto UpdateStats(const Node<TTag, TMaxTags>* child, int delta) -> void
+        auto UpdateStats(const Node<TTag, TMaxTags> *child, int delta) -> void
         {
-            auto current = static_cast<Node<TTag, TMaxTags>*>(this);
+            auto current = static_cast<Node<TTag, TMaxTags> *>(this);
 
             while (current)
             {
@@ -101,7 +101,7 @@ namespace N503::Event::Details
                     }
                 }
 #else
-                for (const auto& [tag, count] : child->m_TagCounts)
+                for (const auto &[tag, count] : child->m_TagCounts)
                 {
                     if (count > 0)
                     {

@@ -23,15 +23,17 @@ namespace N503::Event
 
     /// @brief リソースアロケータが満たすべき要件
     template <typename TResource, typename TNodeType>
-    concept ResourceAllocator = requires(TResource& resource, TNodeType* pointer, std::size_t count) {
+    concept ResourceAllocator = requires(TResource &resource, TNodeType *pointer, std::size_t count) {
         /// @brief 型 T のメモリを count 個分確保
-        { resource.template Allocate<TNodeType>(count) } -> std::convertible_to<TNodeType*>;
+        { resource.template Allocate<TNodeType>(count) } -> std::convertible_to<TNodeType *>;
 
         /// @brief メモリを返却
         { resource.Deallocate(pointer, count) } -> std::same_as<void>;
 
         /// @brief 型付きアロケータ(Pool)の場合は ValueType が一致する必要がある
-        requires(!requires { typename TResource::ValueType; } || std::is_same_v<typename TResource::ValueType, TNodeType>);
+        requires(!requires {
+            typename TResource::ValueType;
+        } || std::is_same_v<typename TResource::ValueType, TNodeType>);
     };
 
     /// @brief イベントシステムのエントリポイント。
@@ -44,7 +46,8 @@ namespace N503::Event
     {
     public:
         /// @brief コンストラクタ。内部 TResource の初期化引数を転送します。
-        template <typename... TArgs> explicit Registry(TTag tag, TArgs&&... args) : m_Storage(std::forward<TArgs>(args)...)
+        template <typename... TArgs>
+        explicit Registry(TTag tag, TArgs &&...args) : m_Storage(std::forward<TArgs>(args)...)
         {
             m_Root = m_Storage.template Create<Node<TTag>>(tag);
         }
@@ -54,7 +57,9 @@ namespace N503::Event
         /// @param tag 新しいノードのタグ
         /// @param handler 実行されるコールバック
         /// @return 生成された子ノードの共有ポインタ
-        auto AddChild(const std::shared_ptr<Node<TTag>>& parent, TTag tag, typename Node<TTag>::Handler handler = nullptr) -> std::shared_ptr<Node<TTag>>
+        auto AddChild(
+            const std::shared_ptr<Node<TTag>> &parent, TTag tag, typename Node<TTag>::Handler handler = nullptr
+        ) -> std::shared_ptr<Node<TTag>>
         {
             if (!parent)
             {
@@ -83,7 +88,7 @@ namespace N503::Event
 
         /// @brief イベントを受け入れ、自身および子孫ノードへ通知を伝播させます
         /// @param visitor イベント情報とトラバーサル制御を持つビジター
-        auto Accept(const Visitor<TTag>& visitor) -> void
+        auto Accept(const Visitor<TTag> &visitor) -> void
         {
             m_Root->Accept(visitor);
         }
