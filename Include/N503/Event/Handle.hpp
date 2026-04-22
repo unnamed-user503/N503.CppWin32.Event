@@ -24,20 +24,20 @@ namespace N503::Event
 
         /// @brief コピーコンストラクタ（削除）
         /// @details 二重管理による意図しない状態変更を防ぐため禁止されています。
-        Handle(const Handle &) = delete;
+        Handle(const Handle&) = delete;
 
         /// @brief コピー代入演算子（削除）
         /// @return Handle&
-        Handle &operator=(const Handle &) = delete;
+        Handle& operator=(const Handle&) = delete;
 
         /// @brief ムーブコンストラクタ
         /// @param other ムーブ元オブジェクト
-        Handle(Handle &&) noexcept = default;
+        Handle(Handle&&) noexcept = default;
 
         /// @brief ムーブ代入演算子
         /// @param other ムーブ元オブジェクト
         /// @return Handle&
-        Handle &operator=(Handle &&) noexcept = default;
+        Handle& operator=(Handle&&) noexcept = default;
 
         /// @brief デストラクタ
         /// @details 管理しているノードが存在する場合、Reset() を呼び出してノードを破棄状態にします。

@@ -38,7 +38,7 @@ namespace N503::Event
     {
     public:
         /// @brief イベントハンドラの型定義
-        using Handler = std::function<void(const Visitor<TTag> &)>;
+        using Handler = std::function<void(const Visitor<TTag>&)>;
 
         /// @brief 特定のタグを持つ子孫ノードの総数を取得します
         /// @param tag 検索するタグ
@@ -48,8 +48,7 @@ namespace N503::Event
         /// @brief コンストラクタ
         /// @param tag このノードに割り当てるタグ
         /// @param handler このノードがイベントを受信した際の処理
-        explicit Node(TTag tag, Handler handler = nullptr)
-            : m_Tag(tag), m_Handler(std::move(handler)), m_State(State::Active)
+        explicit Node(TTag tag, Handler handler = nullptr) : m_Tag(tag), m_Handler(std::move(handler)), m_State(State::Active)
         {
         }
 
@@ -142,7 +141,7 @@ namespace N503::Event
 
         /// @brief イベントを受け入れ、自身および子孫ノードへ通知を伝播させます
         /// @param visitor イベント情報とトラバーサル制御を持つビジター
-        auto Accept(const Visitor<TTag> &visitor) -> void
+        auto Accept(const Visitor<TTag>& visitor) -> void
         {
             if (m_State == State::Destroyed)
             {
@@ -174,7 +173,7 @@ namespace N503::Event
             }
 
             // 子孫へ配送
-            for (auto &child : m_Children)
+            for (auto& child : m_Children)
             {
                 // 兄弟の誰かがStop()を呼んだ場合は他の兄弟へイベントを伝搬するのを止める
                 if (visitor.IsStopped())
@@ -192,7 +191,7 @@ namespace N503::Event
             auto iterate = m_Children.begin();
             while (iterate != m_Children.end())
             {
-                const auto &child = *iterate;
+                const auto& child = *iterate;
 
                 // 子の子孫も再帰的に Sweep
                 child->Sweep();
@@ -212,7 +211,7 @@ namespace N503::Event
 
         /// @brief 条件が一致する場合、登録されたハンドラを実行します
         /// @param visitor イベントビジター
-        auto Notify(const Visitor<TTag> &visitor) const -> void
+        auto Notify(const Visitor<TTag>& visitor) const -> void
         {
             if (m_Tag == visitor.GetTag() && m_Handler)
             {

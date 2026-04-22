@@ -33,7 +33,7 @@ namespace N503::Event
         /// @brief 任意の値を型消去して格納します。
         /// @tparam T 格納するデータの型
         /// @param value 格納する実体
-        template <DataType TDataType> explicit Data(TDataType &&value) noexcept
+        template <DataType TDataType> explicit Data(TDataType&& value) noexcept
         {
             using Decayed = std::decay_t<TDataType>;
             m_TypeInfo = &typeid(Decayed);
@@ -42,7 +42,7 @@ namespace N503::Event
             {
                 // SBO: バッファ内に直接構築し、破棄用の関数を登録
                 new (m_Buffer.data()) Decayed(std::forward<TDataType>(value));
-                m_Cleanup = [](void *p) { std::destroy_at(static_cast<Decayed *>(p)); };
+                m_Cleanup = [](void* p) { std::destroy_at(static_cast<Decayed*>(p)); };
             }
             else
             {
@@ -53,20 +53,20 @@ namespace N503::Event
 
         /// @brief コピーコンストラクタ（削除）
         /// @details イベントデータの二重管理を防ぐため禁止されています。
-        Data(const Data &) = delete;
+        Data(const Data&) = delete;
 
         /// @brief コピー代入演算子（削除）
         /// @return Data&
-        auto operator=(const Data &) -> Data & = delete;
+        auto operator=(const Data&) -> Data& = delete;
 
         /// @brief ムーブコンストラクタ（削除）
         /// @details 配信中にアドレスが変化することを防ぎ、安全性を担保するために禁止されています。
         /// @param other ムーブ元オブジェクト
-        Data(Data &&other) = delete;
+        Data(Data&& other) = delete;
 
         /// @brief ムーブ代入演算子（削除）
         /// @return Data&
-        auto operator=(Data &&) -> Data & = delete;
+        auto operator=(Data&&) -> Data& = delete;
 
         /// @brief デストラクタ
         /// @details SBO 領域に構築されたオブジェクトのデストラクタを明示的に呼び出します。
@@ -83,7 +83,7 @@ namespace N503::Event
         /// @return T型のポインタ、または型が一致しなければ nullptr
         template <DataType TDataType>
         [[nodiscard]]
-        auto As() const noexcept -> const TDataType *
+        auto As() const noexcept -> const TDataType*
         {
             if (!m_TypeInfo || *m_TypeInfo != typeid(TDataType))
             {
@@ -93,13 +93,13 @@ namespace N503::Event
             // スタック格納 → バッファから取得
             if constexpr (sizeof(TDataType) <= BufferSize)
             {
-                return reinterpret_cast<const TDataType *>(m_Buffer.data());
+                return reinterpret_cast<const TDataType*>(m_Buffer.data());
             }
 
             // ヒープ格納 → shared_ptr から取得
             if (m_Heap)
             {
-                return reinterpret_cast<const TDataType *>(m_Heap.get());
+                return reinterpret_cast<const TDataType*>(m_Heap.get());
             }
 
             return nullptr;
@@ -121,10 +121,10 @@ namespace N503::Event
         std::shared_ptr<void> m_Heap;
 
         /// @brief 格納されている型の実行時型情報
-        const std::type_info *m_TypeInfo = nullptr;
+        const std::type_info* m_TypeInfo = nullptr;
 
         /// @brief バッファ内に構築されたオブジェクトを破棄するための関数ポインタ（型消去用）
-        std::function<void(void *)> m_Cleanup;
+        std::function<void(void*)> m_Cleanup;
     };
 
 } // namespace N503::Event

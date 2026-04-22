@@ -23,7 +23,7 @@ namespace N503::Event::Details
         /// @param descendant 子孫候補のノード
         /// @param ancestor 祖先候補のノード
         /// @return ancestor が descendant の祖先なら true
-        auto IsDescendantOf(const Node<TTag, TMaxTags> *descendant, const Node<TTag, TMaxTags> *ancestor) -> bool
+        auto IsDescendantOf(const Node<TTag, TMaxTags>* descendant, const Node<TTag, TMaxTags>* ancestor) -> bool
         {
             if (!descendant || !ancestor)
             {
@@ -31,7 +31,7 @@ namespace N503::Event::Details
             }
 
             // descendant の親をたどっていき、ancestor に到達するか確認
-            Node<TTag, TMaxTags> *current = descendant->m_Parent.lock().get();
+            Node<TTag, TMaxTags>* current = descendant->m_Parent.lock().get();
 
             while (current != nullptr)
             {

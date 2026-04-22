@@ -20,7 +20,7 @@ namespace N503::Event
         /// @param data 配送するデータ
         template <typename TDataType>
             requires(!std::is_reference_v<TDataType>)
-        explicit Visitor(TTag tag, TDataType &&data) noexcept : m_Data(std::forward<TDataType>(data)), m_Tag(tag)
+        explicit Visitor(TTag tag, TDataType&& data) noexcept : m_Data(std::forward<TDataType>(data)), m_Tag(tag)
         {
         }
 
@@ -55,7 +55,7 @@ namespace N503::Event
         /// @return T型のポインタ、または型が一致しなければ nullptr
         template <typename T>
         [[nodiscard]]
-        auto As() const noexcept -> const T *
+        auto As() const noexcept -> const T*
         {
             return m_Data.As<T>();
         }
@@ -76,7 +76,7 @@ namespace N503::Event
         TTag m_Tag{};
 
         /// @brief 配送停止フラグ（const メソッド内から変更可能）
-        mutable bool m_Stopped{false};
+        mutable bool m_Stopped{ false };
     };
 
 } // namespace N503::Event
