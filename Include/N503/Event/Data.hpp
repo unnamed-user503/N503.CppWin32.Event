@@ -36,7 +36,7 @@ namespace N503::Event
         template <DataType TDataType> explicit Data(TDataType&& value) noexcept
         {
             using Decayed = std::decay_t<TDataType>;
-            m_TypeInfo = &typeid(Decayed);
+            m_TypeInfo    = &typeid(Decayed);
 
             if constexpr (sizeof(Decayed) <= BufferSize)
             {
